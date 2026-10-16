@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#101325">
+    <title>霓虹彈珠俱樂部｜3D 打磚塊</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+        :root{color-scheme:dark;--ink:#f6f3ff;--muted:#aaa8c2;--pink:#ff5ab3;--cyan:#58f4e0;--yellow:#ffe66d;--panel:#17192b;--line:#ffffff22}
+        *{box-sizing:border-box}
+        body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -15%,#44304d 0,#1b1b32 34%,#101323 73%);color:var(--ink);font-family:'Noto Sans TC',sans-serif;display:grid;place-items:center;padding:28px 20px 34px;overflow-x:hidden}
+        .app{width:min(100%,980px)}
+        .topline{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
+        .brand{display:flex;align-items:center;gap:12px;min-width:0}
+        .mark{display:grid;place-items:center;width:44px;height:44px;flex:none;border:1px solid #ffffff45;background:linear-gradient(145deg,#ff5ab3,#ff9e65);clip-path:polygon(18% 0,82% 0,100% 50%,82% 100%,18% 100%,0 50%);color:#191528;font:700 20px 'Chakra Petch',sans-serif;box-shadow:0 0 22px #ff5ab366}
+        .brand-copy{font:600 12px 'Chakra Petch',sans-serif;letter-spacing:0;color:var(--cyan);text-transform:uppercase}
+        h1{font-size:clamp(22px,4vw,31px);line-height:1.15;margin:3px 0 0;font-weight:900;letter-spacing:0}
+        .top-actions{display:flex;gap:8px;flex:none}
+        button{font:700 14px 'Noto Sans TC',sans-serif;color:var(--ink);border:1px solid #ffffff38;background:#ffffff0c;padding:10px 14px;cursor:pointer;transition:transform .18s,border-color .18s,background .18s}
+        button:hover{transform:translateY(-2px);border-color:var(--cyan);background:#58f4e01a}
+        button:focus-visible{outline:2px solid var(--yellow);outline-offset:3px}
+        .sound-button{width:44px;height:44px;padding:0;font-size:18px}
+        .dashboard{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:14px;align-items:stretch}
+        .stage-wrap{min-width:0;position:relative;padding:9px;border:1px solid #ffffff2c;background:linear-gradient(145deg,#25233a,#151729);box-shadow:0 18px 60px #08091299, inset 0 1px #ffffff15}
+        .stage-wrap:before,.stage-wrap:after{content:'';position:absolute;width:9px;height:9px;border:1px solid var(--cyan);z-index:2}
+        .stage-wrap:before{top:4px;left:4px;border-right:0;border-bottom:0}.stage-wrap:after{right:4px;bottom:4px;border-left:0;border-top:0}
+        #game{display:block;width:100%;height:min(68vh,610px);min-height:380px;touch-action:none;background:#111528}
+        .hud{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:12px}
+        .stat{padding:13px 15px;background:#17192b}
+        .stat-label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.08em}
+        .stat-value{margin-top:3px;font:700 24px 'Chakra Petch',sans-serif;color:var(--yellow)}
+        .stat:nth-child(2) .stat-value{color:var(--pink)}.stat:nth-child(3) .stat-value{color:var(--cyan)}
+        .side{display:flex;flex-direction:column;gap:12px}
+        .side-panel{border:1px solid var(--line);background:#17192b;padding:16px}
+        .panel-title{font:700 12px 'Chakra Petch',sans-serif;letter-spacing:.08em;color:var(--cyan);margin:0 0 12px}
+        .start{width:100%;color:#191528;border:0;background:linear-gradient(100deg,var(--yellow),#ffb15c);box-shadow:0 5px 20px #ffad4a30;padding:13px}
+        .start:hover{background:linear-gradient(100deg,#fff09a,#ffd07e);border:0}
+        .help{color:#c1bfd2;font-size:13px;line-height:1.85;margin:0}
+        .key{display:inline-block;border:1px solid #ffffff35;background:#ffffff0b;padding:0 6px;color:#fff;font:600 11px 'Chakra Petch',sans-serif}
+        .best{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px}.best strong{color:var(--yellow);font:700 19px 'Chakra Petch',sans-serif}
+        .note{margin:0;color:#89879f;font-size:11px;line-height:1.7}
+        @media(max-width:720px){body{padding:18px 12px 24px}.dashboard{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}.side-panel{padding:13px}.topline{align-items:flex-start}.brand-copy{font-size:10px}#game{height:min(58vh,560px);min-height:330px}.hud{margin-bottom:9px}.stat{padding:10px}.stat-value{font-size:21px}}
+        @media(max-width:420px){.side{grid-template-columns:1fr}.side-panel:nth-child(2){display:none}.top-actions button:not(.sound-button){padding:9px 10px;font-size:12px}.brand{gap:8px}.mark{width:38px;height:38px}#game{min-height:310px}}
+        @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important}}
+    </style>
+</head>
+<body>
+    <main class="app">
+        <header class="topline">
+            <div class="brand"><div class="mark" aria-hidden="true">BS</div><div><div class="brand-copy">BITTER SWEET ARCADE · 07</div><h1>霓虹彈珠俱樂部</h1></div></div>
+            <div class="top-actions"><button id="sound" class="sound-button" type="button" aria-label="關閉音效" aria-pressed="true" title="音效開啟">♫</button><button id="restart" type="button">重新開始</button></div>
+        </header>
+        <section class="dashboard" aria-label="3D 打磚塊遊戲">
+            <div>
+                <div class="hud" aria-live="polite">
+                    <div class="stat"><div class="stat-label">SCORE</div><div class="stat-value" id="score">00000</div></div>
+                    <div class="stat"><div class="stat-label">LIVES</div><div class="stat-value" id="lives">♥ ♥ ♥</div></div>
+                    <div class="stat"><div class="stat-label">BEST</div><div class="stat-value" id="best">00000</div></div>
+                </div>
+                <div class="stage-wrap"><div id="game" aria-label="3D 打磚塊遊戲場景"></div></div>
+            </div>
+            <aside class="side">
+                <section class="side-panel"><h2 class="panel-title">READY PLAYER?</h2><button class="start" id="start" type="button">開始遊戲　▶</button></section>
+                <section class="side-panel"><h2 class="panel-title">HOW TO PLAY</h2><p class="help"><span class="key">←</span> <span class="key">→</span> 移動擋板<br><span class="key">A</span> <span class="key">D</span> 也可以移動<br>滑鼠或手指拖曳控制<br><span class="key">SPACE</span> 發球／暫停</p></section>
+                <section class="side-panel"><h2 class="panel-title">ARCADE STATUS</h2><div class="best"><span>關卡</span><strong id="level">01</strong></div><div style="height:10px"></div><div class="best"><span>磚塊剩餘</span><strong id="remaining">24</strong></div></section>
+                <p class="note">打碎所有霓虹磚塊，別讓彈珠掉出球台。每次碰撞都有專屬音效。</p>
+            </aside>
+        </section>
+    </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        (() => {
+            const host = document.querySelector('#game');
+            const scoreNode = document.querySelector('#score');
+            const livesNode = document.querySelector('#lives');
+            const bestNode = document.querySelector('#best');
+            const remainingNode = document.querySelector('#remaining');
+            const levelNode = document.querySelector('#level');
+            const startButton = document.querySelector('#start');
+            const restartButton = document.querySelector('#restart');
+            const soundButton = document.querySelector('#sound');
+            const colors = [0xff4fa3, 0xff8b50, 0xffd84f, 0x57e9bb, 0x4ac5ff, 0xb37aff];
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x111528);
+            scene.fog = new THREE.Fog(0x111528, 22, 42);
+            const camera = new THREE.PerspectiveCamera(38, 1, .1, 100);
+            camera.position.set(0, 10.4, 17.5);
+            camera.lookAt(0, 0, -1.2);
+            const renderer = new THREE.WebGLRenderer({antialias:true, alpha:false});
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+            renderer.domElement.style.width = '100%';
+            renderer.domElement.style.height = '100%';
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1;
+            host.appendChild(renderer.domElement);
+            scene.add(new THREE.HemisphereLight(0xb9f7ff, 0x272039, .85));
+            const keyLight = new THREE.DirectionalLight(0xffffff, 2.6);
+            keyLight.position.set(-5, 12, 8); keyLight.castShadow = true; keyLight.shadow.mapSize.set(1024,1024); scene.add(keyLight);
+            keyLight.intensity = 1.5;
+            const pinkLight = new THREE.PointLight(0xff3f9b, 9, 18); pinkLight.position.set(-5,3,-4); scene.add(pinkLight);
+            const cyanLight = new THREE.PointLight(0x28e8ff, 8, 18); cyanLight.position.set(5,3,-3); scene.add(cyanLight);
+            const board = {width:10.4, depth:17, left:-5.2, right:5.2, front:7.5, back:-9.5, y:0};
+            const ground = new THREE.Mesh(new THREE.BoxGeometry(board.width,.48,board.depth), new THREE.MeshStandardMaterial({color:0x222640,metalness:.58,roughness:.33}));
+            ground.position.set(0,-.3,-1); ground.receiveShadow=true; scene.add(ground);
+            const playSurface = new THREE.Mesh(new THREE.PlaneGeometry(board.width-.24,board.depth-.24), new THREE.MeshStandardMaterial({color:0x13192d,metalness:.24,roughness:.52}));
+            playSurface.rotation.x=-Math.PI/2; playSurface.position.set(0,-.045,-1); playSurface.receiveShadow=true; scene.add(playSurface);
+            const grid = new THREE.GridHelper(16,16,0x314666,0x27304b); grid.scale.set(.64,1,1.05); grid.position.set(0,-.025,-1); scene.add(grid);
+            function rail(x,z,width,depth,color=0x58f4e0){
+                const mesh=new THREE.Mesh(new THREE.BoxGeometry(width,.62,depth),new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:.48,metalness:.58,roughness:.26}));
+                mesh.position.set(x,.1,z);mesh.castShadow=true;mesh.receiveShadow=true;scene.add(mesh);return mesh;
+            }
+            rail(-5.25,-1,.3,17.2);rail(5.25,-1,.3,17.2);rail(0,-9.53,10.8,.3,0xff5ab3);rail(0,7.53,10.8,.3,0xff8b50);
+            const ballGeometry=new THREE.SphereGeometry(.3,32,24);
+            const ballMaterial=new THREE.MeshStandardMaterial({color:0xffffff,emissive:0x9ffcff,emissiveIntensity:1.1,metalness:.12,roughness:.16});
+            const ball=new THREE.Mesh(ballGeometry,ballMaterial);ball.castShadow=true;scene.add(ball);
+            const paddleMaterial=new THREE.MeshStandardMaterial({color:0xff70bf,emissive:0xff3599,emissiveIntensity:.65,metalness:.45,roughness:.25});
+            const paddle=new THREE.Mesh(new THREE.BoxGeometry(2.15,.38,.62),paddleMaterial);paddle.position.set(0,.12,5.85);paddle.castShadow=true;scene.add(paddle);
+            const paddleGlow=new THREE.PointLight(0xff3fa2,10,5);paddle.add(paddleGlow);
+            const brickGeometry=new THREE.BoxGeometry(1.48,.48,.72);
+            let bricks=[];
+            const rows=4,cols=6,spacingX=1.67,spacingZ=1.02;
+            function makeBricks(){
+                for(const brick of bricks)scene.remove(brick.mesh);
+                bricks=[];
+                for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){
+                    const color=colors[(row+col)%colors.length];
+                    const material=new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:.16,metalness:.32,roughness:.25});
+                    const mesh=new THREE.Mesh(brickGeometry,material);
+                    mesh.position.set((col-(cols-1)/2)*spacingX,.22,-6.15+row*spacingZ);
+                    mesh.castShadow=true;mesh.receiveShadow=true;scene.add(mesh);
+                    const glow=new THREE.PointLight(color,1.1,2.5);glow.position.set(mesh.position.x,1.1,mesh.position.z);scene.add(glow);
+                    bricks.push({mesh,glow,alive:true,color});
+                }
+                remainingNode.textContent=bricks.length;
+            }
+            let score=0,lives=3,best=Number(localStorage.getItem('bitterSweetA7Best')||0),state='ready';
+            let ballVelocity=new THREE.Vector3(.14,0,-.19),lastTime=0,audio=null,soundOn=true,level=1;
+            const keys=new Set();
+            const ballTrail=[];
+            bestNode.textContent=String(best).padStart(5,'0');
+            function updateHud(){scoreNode.textContent=String(score).padStart(5,'0');livesNode.textContent='♥ '.repeat(lives).trim()||'—';bestNode.textContent=String(best).padStart(5,'0');levelNode.textContent=String(level).padStart(2,'0');}
+            function tone(freq=440,duration=.09,wave='sine',volume=.075){
+                if(!soundOn)return;
+                try{
+                    audio ||= new (window.AudioContext||window.webkitAudioContext)();
+                    if(audio.state==='suspended')audio.resume();
+                    const osc=audio.createOscillator(),gain=audio.createGain();
+                    osc.type=wave;osc.frequency.setValueAtTime(freq,audio.currentTime);osc.frequency.exponentialRampToValueAtTime(Math.max(70,freq*.72),audio.currentTime+duration);
+                    gain.gain.setValueAtTime(volume,audio.currentTime);gain.gain.exponentialRampToValueAtTime(.001,audio.currentTime+duration);
+                    osc.connect(gain);gain.connect(audio.destination);osc.start();osc.stop(audio.currentTime+duration);
+                }catch(_){ }
+            }
+            function launch(){if(state==='playing')return;state='playing';ballVelocity.set((Math.random()-.5)*.19,0,-.25);startButton.textContent='遊戲進行中';tone(660,.12,'triangle');}
+            function resetBall(){ball.position.set(paddle.position.x,.38,5.15);ballVelocity.set(.14,0,-.19);state='ready';startButton.textContent='再來一球　▶';}
+            function resetGame(){score=0;lives=3;level=1;makeBricks();paddle.position.x=0;resetBall();updateHud();startButton.textContent='開始遊戲　▶';}
+            function endGame(won){state='over';startButton.textContent=won?'再玩一次　▶':'重新挑戰　▶';tone(won?880:130,.45,won?'triangle':'sawtooth',.1);}
+            function onBrickHit(brick){brick.alive=false;scene.remove(brick.mesh);scene.remove(brick.glow);score+=10*level;if(score>best){best=score;localStorage.setItem('bitterSweetA7Best',String(best));}updateHud();remainingNode.textContent=bricks.filter(item=>item.alive).length;tone(320+Math.random()*640,.11,'triangle',.055);}
+            function setPaddleFromClient(clientX){const rect=renderer.domElement.getBoundingClientRect();const nx=(clientX-rect.left)/rect.width;const viewWidth=2*camera.position.z*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*camera.aspect;paddle.position.x=THREE.MathUtils.clamp((nx-.5)*viewWidth,-4.05,4.05);if(state==='ready')ball.position.x=paddle.position.x;}
+            function resize(){const width=host.clientWidth,height=host.clientHeight;if(!width||!height)return;renderer.setSize(width,height,false);camera.aspect=width/height;camera.updateProjectionMatrix();}
+            function animate(time){requestAnimationFrame(animate);const dt=Math.min((time-lastTime)/16.67||1,2.3);lastTime=time;
+                const move=(keys.has('ArrowLeft')||keys.has('a')||keys.has('A')?-1:0)+(keys.has('ArrowRight')||keys.has('d')||keys.has('D')?1:0);
+                if(move){paddle.position.x=THREE.MathUtils.clamp(paddle.position.x+move*.19*dt,-4.05,4.05);if(state==='ready')ball.position.x=paddle.position.x;}
+                if(state==='playing'){
+                    ball.position.addScaledVector(ballVelocity,dt);
+                    if(ball.position.x<board.left+.5||ball.position.x>board.right-.5){ballVelocity.x*=-1;ball.position.x=THREE.MathUtils.clamp(ball.position.x,board.left+.5,board.right-.5);tone(250,.06,'sine',.035);}
+                    if(ball.position.z<board.back+.55){ballVelocity.z=Math.abs(ballVelocity.z);tone(280,.06,'sine',.035);}
+                    if(ballVelocity.z>0&&ball.position.z>paddle.position.z-.42&&ball.position.z<paddle.position.z+.28&&Math.abs(ball.position.x-paddle.position.x)<1.35){
+                        const offset=(ball.position.x-paddle.position.x)/1.35;ballVelocity.set(offset*.28,0,-Math.sqrt(Math.max(.035,.078-offset*offset*.035)));ball.position.z=paddle.position.z-.44;tone(490+Math.abs(offset)*300,.07,'square',.04);
+                    }
+                    for(const brick of bricks){if(!brick.alive)continue;const p=brick.mesh.position;if(Math.abs(ball.position.x-p.x)<.93&&Math.abs(ball.position.z-p.z)<.55){onBrickHit(brick);ballVelocity.z*=-1;ballVelocity.multiplyScalar(1.012);break;}}
+                    if(ball.position.z>board.front+.5){lives--;updateHud();tone(145,.24,'sawtooth',.08);if(lives<=0)endGame(false);else resetBall();}
+                    if(bricks.every(brick=>!brick.alive)){level++;makeBricks();ballVelocity.multiplyScalar(1.12);tone(900,.2,'triangle');state='ready';startButton.textContent='下一關　▶';}
+                }
+                ball.rotation.x+=.04*dt;ball.rotation.z+=.025*dt;
+                for(const brick of bricks)if(brick.alive)brick.mesh.rotation.y=Math.sin(time*.001+brick.mesh.position.x)*.025;
+                renderer.render(scene,camera);
+            }
+            startButton.addEventListener('click',()=>{if(state==='over')resetGame();launch();});
+            restartButton.addEventListener('click',resetGame);
+            soundButton.addEventListener('click',()=>{soundOn=!soundOn;soundButton.textContent=soundOn?'♫':'♪';soundButton.setAttribute('aria-pressed',String(soundOn));soundButton.setAttribute('aria-label',soundOn?'關閉音效':'開啟音效');soundButton.title=`音效${soundOn?'開啟':'關閉'}`;if(soundOn)tone(660,.08,'triangle');});
+            window.addEventListener('keydown',event=>{if(['ArrowLeft','ArrowRight',' '].includes(event.key))event.preventDefault();keys.add(event.key);if(event.code==='Space'){if(state==='playing'){state='paused';startButton.textContent='繼續遊戲　▶';}else if(state==='paused'){state='playing';startButton.textContent='遊戲進行中';}else launch();}});
+            window.addEventListener('keyup',event=>keys.delete(event.key));
+            renderer.domElement.addEventListener('pointermove',event=>{if(event.buttons||event.pointerType==='touch')setPaddleFromClient(event.clientX);});
+            renderer.domElement.addEventListener('pointerdown',event=>{setPaddleFromClient(event.clientX);if(state==='ready')launch();});
+            window.addEventListener('resize',resize);
+            makeBricks();resetBall();startButton.textContent='開始遊戲　▶';updateHud();resize();requestAnimationFrame(animate);
+        })();
+    </script>
+</body>
+</html>
